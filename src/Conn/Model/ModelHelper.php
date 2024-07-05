@@ -3,11 +3,13 @@
  * Helper para pegar os atributos
  */
 
-namespace Szagot\Helper\Attributes;
+namespace Szagot\Helper\Conn\Model;
 
 use Exception;
 use ReflectionClass;
 use ReflectionProperty;
+use Szagot\Helper\Attributes\PrimaryKey;
+use Szagot\Helper\Attributes\Table;
 
 class ModelHelper
 {

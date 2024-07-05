@@ -6,11 +6,11 @@
  * @copyright Copyright (c) 2024
  */
 
-namespace Szagot\Helper\Conn;
+namespace Szagot\Helper\Conn\Model;
 
 /**
  * Utilizar o atributo:
- *      #[Table(name='nome_da_tabela')]
+ *      #[Table(name: 'nome_da_tabela')]
  *
  * E na propriedade que referencia a chave primaria, usar o atributo
  *      #[PrimaryKey]
