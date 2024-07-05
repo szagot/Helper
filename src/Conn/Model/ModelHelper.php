@@ -7,6 +7,7 @@ namespace Szagot\Helper\Attributes;
 
 use Exception;
 use ReflectionClass;
+use ReflectionProperty;
 
 class ModelHelper
 {
@@ -45,6 +46,26 @@ class ModelHelper
      */
     public static function getPrimaryKey(string $class): string
     {
+        return self::getPKAttribute($class)?->getName() ?? '';
+    }
+
+    /**
+     * A chave primária não é do tipo de auto incremento (padrão)?
+     *
+     * @param string $class
+     *
+     * @return bool
+     */
+    public static function isPKAutoIncrement(string $class): bool
+    {
+        $attribute = self::getPKAttribute($class);
+        /** @var PrimaryKey $instance */
+        $instance = $attribute->getAttributes()[0]?->newInstance();
+        return $instance?->isAutoIncrement() ?? false;
+    }
+
+    private static function getPKAttribute(string $class): ?ReflectionProperty
+    {
         try {
             $reflection = new ReflectionClass($class);
 
@@ -52,13 +73,13 @@ class ModelHelper
             foreach ($reflection->getProperties() as $property) {
                 // Se a propriedade tem o atributo PrimaryKey, retorna o nome dela.
                 if (!empty($property->getAttributes(PrimaryKey::class))) {
-                    return $property->getName();
+                    return $property;
                 }
             }
         } catch (Exception) {
-            return '';
+            return null;
         }
 
-        return '';
+        return null;
     }
 }

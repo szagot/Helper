@@ -121,9 +121,9 @@ class Crud
         $table = self::getTable($class, $instance);
         $tableContent = $instance->toArray();
 
-        $idField = self::getPrimaryKey($class, true);
-        if (!empty($idField)) {
-            unset($tableContent[$idField]);
+        // Se a Chave primaria for do tipo de auto incremento, exclui ela dos campos de inserção
+        if (ModelHelper::isPKAutoIncrement($class)) {
+            unset($tableContent[self::getPrimaryKey($class)]);
         }
 
         $fieldsValues = ':' . implode(', :', array_keys($tableContent));
@@ -233,15 +233,14 @@ class Crud
      * Pega a chave primária
      *
      * @param string $class
-     * @param bool   $allowEmpty
      *
      * @return string
      * @throws ConnException
      */
-    private static function getPrimaryKey(string $class, bool $allowEmpty = false): string
+    private static function getPrimaryKey(string $class): string
     {
         $pk = ModelHelper::getPrimaryKey($class);
-        if (empty($pk) && !$allowEmpty) {
+        if (empty($pk)) {
             throw new ConnException('Chave primária não declarada');
         }
 
