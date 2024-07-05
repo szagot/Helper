@@ -77,12 +77,53 @@ try {
 }
 ```
 
-> **Obs**.: Para usar o Crud, a conexão deve ter sido setada na classe Query, umas vez que há uma dependência
-> entre essas classes.
+#### Utilizando o Crud
+
+Para utilizar o Crud de modo correto, é necessário:
+
+* Criar uma conexão do tipo Connection
+* Adicionar ela na Query
+* Ter models que tenham sido estendidos de aModel
+
+Exemplo básico:
+
+```php
+// Model
+class MinhaClassePersonalizada extends \Szagot\Helper\Conn\aModel
+{
+    const TABLE = 'nome_da_tabela_do_banco';
+    
+    private int     $id;
+    private ?string $campo1;
+    private ?string $campo2;
+}
+
+// Preparando conexão
+Query::setConn(
+    new Connection(
+        'banco',
+        'localhost',
+        'root',
+        ''
+    )
+);
+
+// Pegando um registro específico:
+try {
+    /** @var MinhaClassePersonalizada $minhaInstancia */
+    $minhaInstancia = Crud::get(MinhaClassePersonalizada::class, 'id', 1);
+} catch (ConnException $e) {
+    exit($e);
+}
+```
+
+---
 
 ### Controle de Recebimento Requisições: `Szagot\Helper\Uri`
 
 Em breve....
+
+---
 
 ### Execução de Requisições: `Szagot\Helper\HttpRequest`
 
