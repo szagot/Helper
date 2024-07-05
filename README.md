@@ -71,7 +71,7 @@ Fazendo uma inserção com Crud
 
 ```php
 try {
-    $id = Crud::insert(MinhaClassePersonalizada::class, 'id', $minhaInstancia);
+    $id = Crud::insert(MinhaClassePersonalizada::class, $minhaInstancia);
 } catch (ConnException $e) {
     exit($e);
 }
@@ -84,18 +84,26 @@ Para utilizar o Crud de modo correto, é necessário:
 * Criar uma conexão do tipo Connection
 * Adicionar ela na Query
 * Ter models que tenham sido estendidos de aModel
+* Usar os attributes obrigatórios Table e PrimaryKey
+* Se um campo do seu model for extra, isto é, não tiver um campo de mesmo nome na tabela, use o atributo opcional
+  IgnoreField
+
+> **Obs**.: No caso de tabelas personalizadas que não possuam primary Key, utilize Query diretamente, sem Crud.
 
 Exemplo básico:
 
 ```php
 // Model
-class MinhaClassePersonalizada extends \Szagot\Helper\Conn\aModel
+#[Table(name: 'nome_da_tabela_do_banco')]
+class MinhaClassePersonalizada extends \Szagot\Helper\Conn\Model\aModel
 {
-    const TABLE = 'nome_da_tabela_do_banco';
-    
+    #[PrimaryKey]
     private int     $id;
     private ?string $campo1;
     private ?string $campo2;
+    
+    #[IgnoreField]
+    private OutraClasse $campoQueNaoPertenceATabela;
 }
 
 // Preparando conexão
@@ -108,12 +116,27 @@ Query::setConn(
     )
 );
 
-// Pegando um registro específico:
+// Pegando um registro específico: ID = 1
 try {
     /** @var MinhaClassePersonalizada $minhaInstancia */
-    $minhaInstancia = Crud::get(MinhaClassePersonalizada::class, 'id', 1);
+    $minhaInstancia = Crud::get(MinhaClassePersonalizada::class, 1);
 } catch (ConnException $e) {
     exit($e);
+}
+```
+
+> **ATENÇÃO!** Se a chave primária não é do tipo de auto incremento, não esqueça de informar isso no atributo  
+> PrimaryKey seguinte forma:
+
+```php
+// Model
+#[Table(name: 'nome_da_tabela_do_banco')]
+class MinhaClassePersonalizadaSemAutoIncremento extends \Szagot\Helper\Conn\Model\aModel
+{
+    #[PrimaryKey(autoIncrement: false)]
+    private string  $code;
+    private ?string $campo1;
+    private ?string $campo2;
 }
 ```
 

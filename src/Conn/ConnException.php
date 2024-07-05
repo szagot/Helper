@@ -14,7 +14,7 @@ use Exception;
 
 class ConnException extends Exception
 {
-    private array $queryLogs = [];
+    private array $queryLogs;
 
     public function __construct(string $message = "")
     {

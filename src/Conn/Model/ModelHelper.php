@@ -8,6 +8,7 @@ namespace Szagot\Helper\Conn\Model;
 use Exception;
 use ReflectionClass;
 use ReflectionProperty;
+use Szagot\Helper\Attributes\IgnoreField;
 use Szagot\Helper\Attributes\PrimaryKey;
 use Szagot\Helper\Attributes\Table;
 
@@ -64,6 +65,35 @@ class ModelHelper
         /** @var PrimaryKey $instance */
         $instance = $attribute->getAttributes()[0]?->newInstance();
         return $instance?->isAutoIncrement() ?? false;
+    }
+
+    /**
+     * O campo deve ser ignorado? Isto é, ele não faz parte do Banco
+     *
+     * @param string $class
+     * @param string $field
+     *
+     * @return bool
+     */
+    public static function ignoreField(string $class, string $field): bool
+    {
+        try {
+            $reflection = new ReflectionClass($class);
+
+            // Percorre as propriedades em busca
+            foreach ($reflection->getProperties() as $property) {
+                if ($property->getName() != $field) {
+                    continue;
+                }
+
+                // A propriedade tem o atributo IgnoreField?
+                return !empty($property->getAttributes(IgnoreField::class));
+            }
+        } catch (Exception) {
+            return false;
+        }
+
+        return false;
     }
 
     private static function getPKAttribute(string $class): ?ReflectionProperty

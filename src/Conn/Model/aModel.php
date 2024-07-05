@@ -20,13 +20,20 @@ abstract class aModel
     /**
      * Cria uma versão em array associativa do seu model
      *
+     * @param bool $notIgnoreFields TRUE se não é para ignorar os campos
+     *
      * @return array|null
      */
-    public function toArray(): ?array
+    public function toArray(bool $notIgnoreFields = false): ?array
     {
         $modelArray = [];
 
         foreach ($this as $key => $value) {
+            // O campo deve ser ignorado?
+            if (ModelHelper::ignoreField($this::class, $key) && !$notIgnoreFields) {
+                continue;
+            }
+
             $modelArray[$key] = ($value instanceof aModel) ? $value->toArray() : $value;
         }
 

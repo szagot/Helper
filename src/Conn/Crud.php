@@ -2,7 +2,7 @@
 /**
  * Classe para fazer um CRUD básico em banco usando as classes Query e Connection
  *
- * Para funcionar, seus Models de Tabela devem ter um Extends de Szagot\Conn\aModel
+ * Para funcionar, seus Models de Tabela devem ter um Extends de Szagot\Helper\Conn\Model\aModel
  *
  * Exemplo de uso:
  *      Crud::getAll(MyModel::class)
@@ -22,7 +22,7 @@ class Crud
      * Pega um registro específico pelo identificados
      *
      * Exemplo de uso:
-     *       Crud::get(MyModel::class, 'id', 2)
+     *       Crud::get(MyModel::class, 2)
      *
      * @param string $class Classe relacionada a pesquisa.
      * @param mixed  $value Valor do identificador
@@ -82,7 +82,7 @@ class Crud
      * Pesquisa pelo termo
      *
      * Exemplo de uso:
-     *        Crud::search(MyModel::class,'name', '%fulano%')
+     *        Crud::search(MyModel::class, 'name', '%fulano%')
      *
      * @param string $class       Classe relacionada a pesquisa.
      * @param string $searchField Nome do campo a ser pesquisado
@@ -109,7 +109,7 @@ class Crud
      * Insere um registro
      *
      * Exemplo de uso:
-     *        Crud::insert(MyModel::class, 'id', $myModelInstance)
+     *        Crud::insert(MyModel::class, $myModelInstance)
      *
      * @param string $class    Classe relacionada a pesquisa.
      * @param aModel $instance Objeto a ser adicionado da mesma instância de $class
@@ -147,7 +147,7 @@ class Crud
      * Atualiza um registro
      *
      * * Exemplo de uso:
-     * *        Crud::update(MyModel::class, 'id', $myModelInstance)
+     * *        Crud::update(MyModel::class, $myModelInstance)
      *
      * @param string $class    Classe relacionada a pesquisa.
      * @param aModel $instance Objeto a ser alterado
@@ -166,6 +166,7 @@ class Crud
             if ($key == $idField) {
                 continue;
             }
+
             $fields[] = "$key = :$key";
         }
         $fieldsValues = implode(', ', $fields);
@@ -185,7 +186,7 @@ class Crud
      * Apaga um registro
      *
      * * Exemplo de uso:
-     * *        Crud::delete(MyModel::class, 'id', 2)
+     * *        Crud::delete(MyModel::class, 2)
      *
      * @param string $class   Classe relacionada a pesquisa.
      * @param mixed  $pkValue Valor do identificador a ser deletado
@@ -209,6 +210,32 @@ class Crud
 
         if (!$delete) {
             throw new ConnException("Não foi possível deletar o registro de ID {$pkValue} no momento.");
+        }
+    }
+
+    /**
+     * Apaga TODOS os registros localizados pelo termo.
+     *
+     * Exemplo de uso:
+     *        Crud::deleteAny(MyModel::class, 'name', '%fulano%')
+     *
+     * @throws ConnException
+     */
+    static public function deleteAny(string $class, string $searchField, mixed $value): void
+    {
+        $table = self::getTable($class);
+
+        $delete = Query::exec(
+        /** @lang text */
+            "DELETE FROM $table WHERE {$searchField} = :{$searchField}",
+            [
+                $searchField => $value,
+            ],
+            $class
+        ) ?? [];
+
+        if (!$delete) {
+            throw new ConnException("Não foi possível deletar os registros ['$searchField = $value'] no momento.");
         }
     }
 
