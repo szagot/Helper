@@ -6,15 +6,7 @@ use DateTime;
 
 class Log
 {
-    private Connection $conn;
-    private DateTime   $timestamp;
-    private ?string    $sql;
-    private mixed      $lastId;
-    private ?int       $rowsAffected;
-    private ?bool      $hasError;
-    private ?string    $errorMessage;
-    private ?string    $pdoSQL;
-    private ?array     $sqlParams;
+    private DateTime $timestamp;
 
     /**
      * @param Connection  $conn
@@ -27,24 +19,16 @@ class Log
      * @param array|null  $sqlParams
      */
     public function __construct(
-        Connection $conn,
-        ?string $sql,
-        mixed $lastId,
-        ?int $rowsAffected,
-        ?bool $hasError,
-        ?string $errorMessage,
-        ?string $pdoSQL,
-        ?array $sqlParams
+        private Connection $conn,
+        private ?string $sql,
+        private mixed $lastId,
+        private ?int $rowsAffected,
+        private ?bool $hasError,
+        private ?string $errorMessage,
+        private ?string $pdoSQL,
+        private ?array $sqlParams
     ) {
-        $this->conn = $conn;
         $this->timestamp = new DateTime();
-        $this->sql = $sql;
-        $this->lastId = $lastId;
-        $this->rowsAffected = $rowsAffected;
-        $this->hasError = $hasError;
-        $this->errorMessage = $errorMessage;
-        $this->pdoSQL = $pdoSQL;
-        $this->sqlParams = $sqlParams;
     }
 
     public function __toString(): string
@@ -98,5 +82,4 @@ class Log
     {
         return $this->sqlParams;
     }
-
 }

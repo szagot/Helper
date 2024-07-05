@@ -8,11 +8,15 @@
 
 namespace Szagot\Helper\Conn;
 
+/**
+ * Utilizar o atributo:
+ *      #[Table(name='nome_da_tabela')]
+ *
+ * E na propriedade que referencia a chave primaria, usar o atributo
+ *      #[PrimaryKey]
+ */
 abstract class aModel
 {
-    /** @var string Altere em seu model */
-    const TABLE = 'nome_da_tabela';
-
     /**
      * Cria uma versão em array associativa do seu model
      *

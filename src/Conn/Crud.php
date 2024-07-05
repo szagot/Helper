@@ -13,6 +13,8 @@
 
 namespace Szagot\Helper\Conn;
 
+use Szagot\Helper\Attributes\ModelHelper;
+
 class Crud
 {
     /**
@@ -21,19 +23,20 @@ class Crud
      * Exemplo de uso:
      *       Crud::get(MyModel::class, 'id', 2)
      *
-     * @param string $class   Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
-     * @param string $idField Nome do campo identificador
-     * @param mixed  $value   Valor do identificador
+     * @param string $class Classe relacionada a pesquisa.
+     * @param mixed  $value Valor do identificador
      *
      * @return mixed
      * @throws ConnException
      */
-    static public function get(string $class, string $idField, mixed $value): mixed
+    static public function get(string $class, mixed $value): mixed
     {
         $table = self::getTable($class);
+        $idField = self::getPrimaryKey($class);
 
         return Query::exec(
-            "SELECT * FROM {$table} WHERE $idField = :value",
+        /** @lang text */
+            "SELECT * FROM $table WHERE $idField = :value",
             [
                 'value' => $value,
             ],
@@ -47,7 +50,7 @@ class Crud
      * Exemplo de uso:
      *       Crud::getAll(MyModel::class, 0, 0, 'created_at DESC')
      *
-     * @param string $class Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
+     * @param string $class Classe relacionada a pesquisa.
      * @param int    $limit Deixe 0 para não ter limite. Nesse caso $offset é ignorado
      * @param int    $offset
      * @param string $orderBy
@@ -66,7 +69,12 @@ class Crud
             $filter .= " LIMIT {$offset}, {$limit}";
         }
 
-        return Query::exec("SELECT * FROM $table {$filter}", null, $class) ?? [];
+        return Query::exec(
+        /** @lang text */
+            "SELECT * FROM $table {$filter}",
+            null,
+            $class
+        ) ?? [];
     }
 
     /**
@@ -75,7 +83,7 @@ class Crud
      * Exemplo de uso:
      *        Crud::search(MyModel::class,'name', '%fulano%')
      *
-     * @param string $class       Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
+     * @param string $class       Classe relacionada a pesquisa.
      * @param string $searchField Nome do campo a ser pesquisado
      * @param mixed  $value       Valor da pesquisa. Use % como coringa
      *
@@ -87,6 +95,7 @@ class Crud
         $table = self::getTable($class);
 
         return Query::exec(
+        /** @lang text */
             "SELECT * FROM $table WHERE $searchField LIKE :value",
             [
                 'value' => $value,
@@ -101,18 +110,18 @@ class Crud
      * Exemplo de uso:
      *        Crud::insert(MyModel::class, 'id', $myModelInstance)
      *
-     * @param string $class    Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
-     * @param string $idField  Nome do campo identificador
-     * @param aModel  $instance Objeto a ser adicionado da mesma instância de $class
+     * @param string $class    Classe relacionada a pesquisa.
+     * @param aModel $instance Objeto a ser adicionado da mesma instância de $class
      *
      * @return int|null
      * @throws ConnException
      */
-    static public function insert(string $class, string $idField, aModel $instance): ?int
+    static public function insert(string $class, aModel $instance): ?int
     {
         $table = self::getTable($class, $instance);
         $tableContent = $instance->toArray();
 
+        $idField = self::getPrimaryKey($class, true);
         if (!empty($idField)) {
             unset($tableContent[$idField]);
         }
@@ -120,7 +129,12 @@ class Crud
         $fieldsValues = ':' . implode(', :', array_keys($tableContent));
         $fields = implode(', ', array_keys($tableContent));
 
-        $insert = Query::exec("INSERT INTO $table ($fields) VALUES ($fieldsValues)", $tableContent, $class) ?? [];
+        $insert = Query::exec(
+        /** @lang text */
+            "INSERT INTO $table ($fields) VALUES ($fieldsValues)",
+            $tableContent,
+            $class
+        ) ?? [];
         if (!$insert) {
             throw new ConnException('Não foi possível inserir o registro no momento.');
         }
@@ -134,17 +148,17 @@ class Crud
      * * Exemplo de uso:
      * *        Crud::update(MyModel::class, 'id', $myModelInstance)
      *
-     * @param string $class    Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
-     * @param string $idField  Nome do campo identificador
-     * @param aModel  $instance Objeto a ser alterado
+     * @param string $class    Classe relacionada a pesquisa.
+     * @param aModel $instance Objeto a ser alterado
      *
      * @return void
      * @throws ConnException
      */
-    static public function update(string $class, string $idField, aModel $instance): void
+    static public function update(string $class, aModel $instance): void
     {
         $table = self::getTable($class, $instance);
         $tableContent = $instance->toArray();
+        $idField = self::getPrimaryKey($class);
 
         $fields = [];
         foreach ($tableContent as $key => $value) {
@@ -156,6 +170,7 @@ class Crud
         $fieldsValues = implode(', ', $fields);
 
         $update = Query::exec(
+        /** @lang text */
             "UPDATE $table SET $fieldsValues WHERE {$idField} = :{$idField}",
             $tableContent,
             $class
@@ -171,27 +186,28 @@ class Crud
      * * Exemplo de uso:
      * *        Crud::delete(MyModel::class, 'id', 2)
      *
-     * @param string $class   Classe relacionada a pesquisa. Deve ser uma classe extendida de aModel
-     * @param string $idField Nome do campo identificador
-     * @param mixed  $value   Valor do identificador a ser deletado
+     * @param string $class   Classe relacionada a pesquisa.
+     * @param mixed  $pkValue Valor do identificador a ser deletado
      *
      * @return void
      * @throws ConnException
      */
-    static public function delete(string $class, string $idField, mixed $value): void
+    static public function delete(string $class, mixed $pkValue): void
     {
         $table = self::getTable($class);
+        $idField = self::getPrimaryKey($class);
 
         $delete = Query::exec(
+        /** @lang text */
             "DELETE FROM $table WHERE {$idField} = :{$idField}",
             [
-                $idField => $value,
+                $idField => $pkValue,
             ],
             $class
         ) ?? [];
 
         if (!$delete) {
-            throw new ConnException("Não foi possível deletar o registro de ID {$value} no momento.");
+            throw new ConnException("Não foi possível deletar o registro de ID {$pkValue} no momento.");
         }
     }
 
@@ -200,16 +216,35 @@ class Crud
      *
      * @throws ConnException
      */
-    private static function getTable(string $class, mixed $instanceValidate = null): ?string
+    private static function getTable(string $class, mixed $instanceValidate = null): string
     {
-        if (!is_subclass_of($class, aModel::class)) {
-            throw new ConnException('Modelo de tabela inválido');
+        if (!$table = ModelHelper::getTableName($class)) {
+            throw new ConnException('Nome da tabela não declarada');
         }
 
         if ($instanceValidate && !$instanceValidate instanceof $class) {
             throw new ConnException('A instância da classe não confere com ela');
         }
 
-        return $class::TABLE;
+        return $table;
+    }
+
+    /**
+     * Pega a chave primária
+     *
+     * @param string $class
+     * @param bool   $allowEmpty
+     *
+     * @return string
+     * @throws ConnException
+     */
+    private static function getPrimaryKey(string $class, bool $allowEmpty = false): string
+    {
+        $pk = ModelHelper::getPrimaryKey($class);
+        if (empty($pk) && !$allowEmpty) {
+            throw new ConnException('Chave primária não declarada');
+        }
+
+        return $pk;
     }
 }

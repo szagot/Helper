@@ -20,8 +20,7 @@ use \PDO;
 
 class Connection
 {
-    private ?PDO    $conn;
-    private ?string $db;
+    private ?PDO $conn;
 
     /**
      * Connection constructor.
@@ -31,8 +30,12 @@ class Connection
      * @param string $user Define o usuário
      * @param string $pass Define a senha
      */
-    public function __construct(string $db, string $host = 'localhost', string $user = 'root', string $pass = '')
-    {
+    public function __construct(
+        private string $db,
+        string $host = 'localhost',
+        string $user = 'root',
+        string $pass = ''
+    ) {
         try {
             $this->conn = new PDO("mysql:host={$host};dbname={$db};charset=utf8", $user, $pass,
                                   [
@@ -45,7 +48,6 @@ class Connection
                                       // Mantém aberta a Conexão com o Banco de Dados, se possível
                                       PDO::ATTR_PERSISTENT         => true,
                                   ]);
-            $this->db = $db;
         } catch (PDOException $err) {
             error_log("Erro ao conectar com o Banco de Dados: {$err->getMessage()}");
             $this->conn = null;
