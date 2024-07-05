@@ -48,6 +48,7 @@ class Connection
             $this->db = $db;
         } catch (PDOException $err) {
             error_log("Erro ao conectar com o Banco de Dados: {$err->getMessage()}");
+            $this->conn = null;
             exit(-1);
         }
     }

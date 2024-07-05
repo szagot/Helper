@@ -19,7 +19,7 @@ use \PDO;
 
 class Query
 {
-    private static Connection $conn;
+    private static ?Connection $conn = null;
     private static array      $log = [];
 
     /**
@@ -33,13 +33,13 @@ class Query
      * ATENÇÃO! É necessário que a conexão ao BD tenha sido informado em algum momento antes com self::setConn,
      * ou através do parâmetro $conn. Exemplo: Query::exec('SELECT ...', [], new Connection(...) );
      *
-     * @param string $sql   Comando SQL
-     * @param array  $params
-     * @param string $class Classe associada
+     * @param string      $sql   Comando SQL
+     * @param array|null  $params
+     * @param string|null $class Classe associada
      *
      * @return array|boolean Em caso de sucesso retorna TRUE ou um array associativo em caso de SELECT
      */
-    public static function exec($sql, $params = [], $class = null): array|bool
+    public static function exec(string $sql, ?array $params = [], ?string $class = null): array|bool
     {
         if (!self::$conn) {
             die('Efetue uma conexão primeiro');
