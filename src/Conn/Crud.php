@@ -13,7 +13,8 @@
 
 namespace Szagot\Helper\Conn;
 
-use Szagot\Helper\Attributes\ModelHelper;
+use Szagot\Helper\Conn\Model\aModel;
+use Szagot\Helper\Conn\Model\ModelHelper;
 
 class Crud
 {
