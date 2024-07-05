@@ -1,6 +1,6 @@
 <?php
 
-namespace Szagot\Conn;
+namespace Szagot\Helper\Conn;
 
 use DateTime;
 

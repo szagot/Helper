@@ -8,7 +8,7 @@
  * @copyright Copyright (c) 2024
  */
 
-namespace Szagot\Conn;
+namespace Szagot\Helper\Conn;
 
 use Exception;
 
