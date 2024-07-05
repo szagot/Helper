@@ -1,0 +1,24 @@
+{
+  "name": "szagot/helper",
+  "description": "Classes estilo HELPER para Configuração de Sistemas e controle de Banco e Requisições",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Daniel Bispo",
+      "email": "szago@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "ext-pdo": "*",
+    "ext-curl": "*",
+    "ext-fileinfo": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Szagot\\": "src/"
+    }
+  }
+}
