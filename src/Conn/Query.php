@@ -136,17 +136,18 @@ class Query
     /**
      * Cria log de execução
      *
-     * @param string $sql          Query executada
-     * @param mixed  $lastId       Último id inserido
-     * @param int    $rowsAffected Quantidade de linhas afetadas
-     * @param string $error        Erros
+     * @param string      $sql          Query executada
+     * @param array|null  $params
+     * @param mixed       $lastId       Último id inserido
+     * @param int|null    $rowsAffected Quantidade de linhas afetadas
+     * @param string|null $error        Erros
      */
     private static function makeLog(
         string $sql,
-        array $params = [],
+        ?array $params = [],
         mixed $lastId = null,
-        int $rowsAffected = 0,
-        string $error = ''
+        ?int $rowsAffected = 0,
+        ?string $error = ''
     ): void {
         $sqlOriginal = $sql;
 
