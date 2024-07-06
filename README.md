@@ -1,12 +1,18 @@
 # Helper
 
-Conjunto de classes auxiliadoras para Conexão em Banco (Conn), Controle de recebimento de requisições (Uri), Execução de
-requisições (HttpRequest), etc...
+Conjunto de classes auxiliadoras para projetos pequenos que não utilizam grandes frameworks.
+
+Este helper possui auxiliares para:
+
+* Conexão e Consulta em Banco (Conn) 
+* Controle de recebimento de requisições (Server/Uri) 
+* Saída simplificada em JSON para API (Server/Output)
+* Execução de requisições (HttpRequest)
 
 ## Adicionando ao projeto
 
 ```shell
-composer require Szagot/Helper
+composer require szagot/helper
 ```
 
 ## Detalhamento de cada Helper
