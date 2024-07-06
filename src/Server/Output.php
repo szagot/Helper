@@ -22,9 +22,9 @@ class Output
     /**
      * Envia uma resposta JSON de sucesso.
      *
-     * @param mixed $output    Os dados a serem enviados na resposta.
-     * @param int   $httpCode  O código HTTP da resposta.
-     * @param array $headers   Cabeçalhos adicionais para a resposta.
+     * @param mixed $output   Os dados a serem enviados na resposta.
+     * @param int   $httpCode O código HTTP da resposta.
+     * @param array $headers  Cabeçalhos adicionais para a resposta.
      */
     static public function success(mixed $output = [], int $httpCode = self::GET_SUCCESS, array $headers = []): void
     {
@@ -34,14 +34,17 @@ class Output
     /**
      * Envia uma resposta JSON de erro.
      *
-     * @param mixed $message   A mensagem de erro ou os dados a serem enviados na resposta.
-     * @param int   $httpCode  O código HTTP da resposta.
-     * @param array $headers   Cabeçalhos adicionais para a resposta.
+     * @param mixed $message  A mensagem de erro ou os dados a serem enviados na resposta.
+     * @param int   $httpCode O código HTTP da resposta.
+     * @param array $headers  Cabeçalhos adicionais para a resposta.
      */
-    static public function error(mixed $message, int $httpCode = self::ERROR_MALFORMED_REQUEST, array $headers = []): void
-    {
+    static public function error(
+        mixed $message,
+        int $httpCode = self::ERROR_MALFORMED_REQUEST,
+        array $headers = []
+    ): void {
         $output = [
-            'status' => $httpCode,
+            'status'  => $httpCode,
             'message' => $message,
         ];
         self::sendResponse($output, $httpCode, $headers);
@@ -50,9 +53,9 @@ class Output
     /**
      * Envia uma resposta JSON.
      *
-     * @param mixed $output    Os dados a serem enviados na resposta.
-     * @param int   $httpCode  O código HTTP da resposta.
-     * @param array $headers   Cabeçalhos adicionais para a resposta.
+     * @param mixed $output   Os dados a serem enviados na resposta.
+     * @param int   $httpCode O código HTTP da resposta.
+     * @param array $headers  Cabeçalhos adicionais para a resposta.
      */
     private static function sendResponse(mixed $output, int $httpCode, array $headers): void
     {
@@ -69,10 +72,10 @@ class Output
 
         // Verifica se a saída é uma string ou um array/objeto
         if (!is_string($output)) {
-            $output = empty($output) ? '[]' : @json_encode($output);
+            $output = empty($output) ? null : @json_encode($output);
         }
 
         // Envia a resposta e encerra o script
-        die($output);
+        die($output ?? '[]');
     }
 }

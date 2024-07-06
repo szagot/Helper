@@ -14,7 +14,7 @@ composer require Szagot/Helper
 > **Obs**.: Há um projeto de backend de uma API de jogo que usa quase todos os Helpers dessa classe. Se quiser utilizar
 > ele como exemplo, é o [szagot/ancient-backend](https://github.com/szagot/ancient-backend)
 
-### Conexão ao Banco: `Szagot\Helper\Conn`
+### Conexão ao Banco: `\Szagot\Helper\Conn`
 
 Conectando ao banco
 
@@ -145,9 +145,107 @@ class MinhaClassePersonalizadaSemAutoIncremento extends \Szagot\Helper\Conn\Mode
 
 ---
 
-### Controle de Recebimento Requisições: `Szagot\Helper\Server`
+### Controle de Recebimento Requisições: `\Szagot\Helper\Server`
 
-Em breve....
+Emitindo saída do tipo JSON (`Content-type: application/json`):
+
+```php
+use Szagot\Helper\Server\Output;
+
+// Saída com sucesso
+Output:success($arrayDeSaida);
+
+// Erro
+Output::error('Deu ruim');
+```
+
+Você também pode especificar um cabeçalho da saída diferente do Padrão:
+
+```php
+// Saída com sucesso
+Output:success($arrayDeSaida, Output::POST_SUCCESS);
+
+// Erro
+Output::error('Deu ruim', Output::ERROR_NOT_FOUND);
+```
+
+> **Obs**.: `Output::success` ou `Output::error` emitem a saída e matam a aplicação. Nada mais é executado após isso.
+
+Pegando as requisições:
+
+```php
+use Szagot\Helper\Server\Uri;
+use Szagot\Helper\Server\Models\Parameter;
+
+$uri = Uri::newInstance();
+
+// IP de quem fez a requisição
+$requestIp = $uri->getRequestIp();
+// Cabeçalhos da requisição recebida
+$headers = getHeaders()
+// Método (GET, POST, PUT, PATCH, DELETE, OPTION)
+$method = $uri->getMethod();
+// URL completa da requisição. Exemplo: "http://localhost:8080/pagina/opcao/detalhe"
+$url = $uri->getUrl();
+// String da Uri. Exemplo: "pagina/opcao/detalhe"
+$uri = $uri->getTextUri();
+// Primeira posição da Uri. Exemplo: "pagina"
+$page = $uri->getUri(0);
+// Arquivo de name "file" enviado
+$file = $uri->getFile('file');
+// Todos os arquivos enviados
+$files = $uri->getFiles();
+
+// Pegando parâmetros
+$name = $uri->getParameter('name');
+// Validando se o parâmetro "isGamer" foi informado na requisição
+if($uri->parameterExists('isGamer')){
+    $isGamer = $uri->getParameter('isGamer', Parameter::FILTER_BOOL);
+}
+```
+
+**Alterando comportamento da URI**:
+
+Caso sua API esteja hospedada em uma pasta diferente da raiz do servidor, você pode determinar o caminho fixo como
+`root` da aplicação.
+
+Dessa forma ele será ignorado pelos métodos.
+
+Exemplo: Vamos supor que seu serviços esteja dentro de "https://servidor.com/caminho/da/aplicacao/", você pode fazer:
+
+```php
+use Szagot\Helper\Server\Uri;
+
+$uri = Uri::newInstance('caminho/da/aplicacao');
+
+$uriTxt = $uri->getTextUri();
+$page = $uri->getUri(0);
+$id = $uri->getUri(1);
+```
+
+No exemplo acima, se uma requisição for feita para "https://servidor.com/caminho/da/aplicacao/produto/20", os valores
+das variáveis serão:
+
+```txt
+$uriTxt: "pagina/20"
+$page..: "produto"
+$id....: "20"
+```
+
+> **Obs**.: Se o `root` for informado com `newInstance()` ou com `setRoot()`, você não precisa informar novamente em
+> outro ponto da sua aplicação. Toda instância feita de Uri manterá o root, a menos que você informe novamente com
+> outros valores.
+
+**Sobre os parâmetros**:
+
+`$uri->getParameter('parametro')` ou `$uri->getParameters()` se refere a qualquer parâmetro enviado, quer via body, quer
+via FormData ou mesmo Query String.
+
+Em caso de duplicidade, os parâmetros informados no body terão prioridade.
+
+Para pegar apenas o Body da requisição, use `$uri->getBody()`. Isso irá devolver um `stdClass` do body.
+
+Ou use `$uri->getBody(false)` para devolver em formato string original.
 
 ---
 
