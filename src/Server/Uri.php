@@ -198,7 +198,17 @@ class Uri
      */
     public function getTextUri(): string
     {
-        return preg_replace('/(^\/|\/$)/', '', str_replace($this->root, '', $this->url));
+        if (empty($this->url)) {
+            return '';
+        }
+
+        $uri = preg_replace('/(^\/|\/$)/', '', $this->url);
+        if (!empty($this->root)) {
+            $uri = preg_replace('/^' . preg_quote($this->root, '/') . '/i', '', $uri);
+            $uri = preg_replace('/(^\/|\/$)/', '', $uri);
+        }
+
+        return $uri;
     }
 
     /**
