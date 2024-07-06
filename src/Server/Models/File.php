@@ -26,7 +26,7 @@ class File
         return $this->name;
     }
 
-    public function getName(): mixed
+    public function getFieldName(): mixed
     {
         return $this->name;
     }

@@ -4,6 +4,7 @@ namespace Szagot\Helper\Request;
 
 use CURLFile;
 use Szagot\Helper\Request\Models\HttpRequestResponse;
+use Szagot\Helper\Server\Models\File;
 
 class HttpRequest
 {
@@ -16,7 +17,7 @@ class HttpRequest
     private ?string             $url;
     private ?string             $method;
     private ?array              $headers;
-    private mixed               $bodyContent = [];
+    private array               $bodyContent = [];
     private CURLFile            $file;
     private string              $basicUser;
     private string              $basicPass;
@@ -85,11 +86,9 @@ class HttpRequest
 
         // Tem Conteúdo de Body?
         if (!empty($this->bodyContent)) {
-            if (!is_string($this->bodyContent) && !$this->getFile()) {
-                $this->bodyContent = http_build_query($this->bodyContent);
-            }
+            $body = $this->getFile() ? $this->bodyContent : http_build_query($this->bodyContent);
             curl_setopt($connection, CURLOPT_POST, true);
-            curl_setopt($connection, CURLOPT_POSTFIELDS, $this->bodyContent);
+            curl_setopt($connection, CURLOPT_POSTFIELDS, $body);
         }
 
         // Resultado
@@ -169,15 +168,15 @@ class HttpRequest
     }
 
     /**
-     * @param string|array $bodyContent Conteúdo a ser enviado.
-     *                                  Normalmente uma string em JSON, XML ou parâmetros em array
+     * @param string|array $bodyContent      Conteúdo a ser enviado.
+     *                                       Normalmente uma string em JSON, XML ou parâmetros em array
      *
      * @return HttpRequest
      */
-    public function setBodyContent(mixed $bodyContent = null): HttpRequest
+    public function setBodyContent(string|array $bodyContent): HttpRequest
     {
         if (is_string($bodyContent)) {
-            $bodyContent = @json_decode($bodyContent);
+            $bodyContent = @json_decode($bodyContent, true);
         }
 
         $this->bodyContent = $bodyContent;
@@ -283,19 +282,17 @@ class HttpRequest
      * Salva o arquivo em formato para envio
      *
      * Exemplo de uso:
-     *      $this->addFileToRequest($filePath, $fileName, 'file')
+     *      $this->addFileToRequest($file)
      *
      * Obs: Use primeiro $this->setBodyContent()
      *
-     * @param string      $filePath
-     * @param string|null $fileName
-     * @param string|null $fieldName
+     * @param File $file
      *
      * @return HttpRequest
      */
-    public function addFileToRequest(string $filePath, string $fileName = null, string $fieldName = null): HttpRequest
+    public function addFileToRequest(File $file): HttpRequest
     {
-        $contentFile = @file_get_contents($filePath);
+        $contentFile = @file_get_contents($file->getFileTmpPath());
         if (empty($contentFile)) {
             return $this;
         }
@@ -304,10 +301,8 @@ class HttpRequest
         $mime = finfo_buffer($finfo, $contentFile);
         finfo_close($finfo);
 
-        $this->file = curl_file_create($filePath, $mime, $fileName);
-        $this->bodyContent[] = [
-            $fieldName => $this->getFile(),
-        ];
+        $this->file = curl_file_create($file->getFileTmpPath(), $mime, $file->getFileName());
+        $this->bodyContent[$file->getFieldName()] = $file->getFile();
 
         return $this;
     }

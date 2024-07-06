@@ -257,4 +257,57 @@ Ou use `$uri->getBody(false)` para devolver em formato string original.
 
 ### Execução de Requisições: `Szagot\Helper\HttpRequest`
 
-Em breve....
+Efetuando uma requisição
+
+```php
+use Szagot\Helper\Request\HttpRequest;
+
+// URI do API
+$uri = 'https://api.site.com.br/v1/collection'; 
+
+// Preparando header
+$header = [
+    'Content-Type: application/json',
+    'User-Agent: Exemplo',
+];
+
+// Preparando body
+$body = [
+    'campo1' => 'valor de exemplo',
+    'campo2' => 99.9,
+];
+
+// Enviando requisição do tipo POST com Auth Basic
+$envioExemplo = new HttpRequest( $uri, 'POST', $header );
+$envioExemplo
+    ->setBodyContent($body)
+    ->setBasicUser('usuario')
+    ->setBasicPass('senha')
+    ->execute();
+
+// Pegando dados do retorno
+$response = $envioExemplo->getResponse();
+$responseBody = $response->getBody();
+$responseHttpStatus = $response->getStatus();
+```
+
+Se deseja enviar um arquivo na requisição, basta dar um addFileToRequest() após o setBodyContent(), da seguinte forma:
+
+```php
+// Arquivo
+$file = $uri->getFile('file');
+$body = [
+    'campo1' => 'valor de exemplo',
+    'campo2' => 99.9,
+];
+
+$envioExemplo
+    ->setBodyContent($body)
+    ->addFileToRequest($file)
+    ->execute();
+
+// Pegando dados do retorno
+$response = $envioExemplo->getResponse();
+$responseBody = $response->getBody();
+$responseHttpStatus = $response->getStatus();
+```
