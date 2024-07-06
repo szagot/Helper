@@ -22,6 +22,11 @@ class Parameter
         $this->type = gettype($this->amendValue());
     }
 
+    public function __toString(): string
+    {
+        return $this->amendValue();
+    }
+
     public function getType(): string
     {
         return $this->type;

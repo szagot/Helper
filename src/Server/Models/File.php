@@ -21,6 +21,11 @@ class File
     ) {
     }
 
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
     public function getName(): mixed
     {
         return $this->name;
