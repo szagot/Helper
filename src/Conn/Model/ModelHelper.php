@@ -14,6 +14,11 @@ use Szagot\Helper\Attributes\Table;
 
 class ModelHelper
 {
+    private static array $tableCache = [];
+    private static array $primaryKeyCache = [];
+    private static array $ignoreFieldCache = [];
+
+
     /**
      * Pega o nome da tabela do model, conforme atributo #[Table(name='nome_da_tabela')]
      *
@@ -23,6 +28,10 @@ class ModelHelper
      */
     public static function getTableName(string $class): ?string
     {
+        if (isset(self::$tableCache[$class])) {
+            return self::$tableCache[$class];
+        }
+
         try {
             $reflection = new ReflectionClass($class);
             // Pega os atributos da Classe
@@ -30,7 +39,7 @@ class ModelHelper
             if (isset($attributes[0])) {
                 /** @var Table $tableAttribute Se foi declarado o atributo da tabela, devolve */
                 $tableAttribute = $attributes[0]->newInstance();
-                return $tableAttribute->getTableName();
+                return self::$tableCache[$class] = $tableAttribute->getTableName();
             }
         } catch (Exception) {
             return null;
@@ -62,9 +71,12 @@ class ModelHelper
     public static function isPKAutoIncrement(string $class): bool
     {
         $attribute = self::getPKAttribute($class);
-        /** @var PrimaryKey $instance */
-        $instance = $attribute->getAttributes()[0]?->newInstance();
-        return $instance?->isAutoIncrement() ?? false;
+        if ($attribute) {
+            /** @var PrimaryKey $instance */
+            $instance = $attribute->getAttributes(PrimaryKey::class)[0]->newInstance();
+            return $instance->isAutoIncrement();
+        }
+        return false;
     }
 
     /**
@@ -77,17 +89,19 @@ class ModelHelper
      */
     public static function ignoreField(string $class, string $field): bool
     {
+        $key = $class . '::' . $field;
+        if (isset(self::$ignoreFieldCache[$key])) {
+            return self::$ignoreFieldCache[$key];
+        }
+
         try {
             $reflection = new ReflectionClass($class);
 
-            // Percorre as propriedades em busca
             foreach ($reflection->getProperties() as $property) {
-                if ($property->getName() != $field) {
-                    continue;
-                }
-
                 // A propriedade tem o atributo IgnoreField?
-                return !empty($property->getAttributes(IgnoreField::class));
+                if ($property->getName() === $field && !empty($property->getAttributes(IgnoreField::class))) {
+                    return self::$ignoreFieldCache[$key] = true;
+                }
             }
         } catch (Exception) {
             return false;
@@ -98,14 +112,18 @@ class ModelHelper
 
     private static function getPKAttribute(string $class): ?ReflectionProperty
     {
+        if (isset(self::$primaryKeyCache[$class])) {
+            return self::$primaryKeyCache[$class];
+        }
+
         try {
             $reflection = new ReflectionClass($class);
 
             // Percorre as propriedades em busca
             foreach ($reflection->getProperties() as $property) {
-                // Se a propriedade tem o atributo PrimaryKey, retorna o nome dela.
+                // Se a propriedade tem o atributo PrimaryKey, retorna ela.
                 if (!empty($property->getAttributes(PrimaryKey::class))) {
-                    return $property;
+                    return self::$primaryKeyCache[$class] = $property;
                 }
             }
         } catch (Exception) {
