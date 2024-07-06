@@ -36,7 +36,7 @@ class ModelHelper
             $reflection = new ReflectionClass($class);
             // Pega os atributos da Classe
             $attributes = $reflection->getAttributes(Table::class);
-            if (isset($attributes[0])) {
+            if (!empty($attributes)) {
                 /** @var Table $tableAttribute Se foi declarado o atributo da tabela, devolve */
                 $tableAttribute = $attributes[0]->newInstance();
                 return self::$tableCache[$class] = $tableAttribute->getTableName();

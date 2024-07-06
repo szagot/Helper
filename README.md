@@ -11,6 +11,9 @@ composer require Szagot/Helper
 
 ## Detalhamento de cada Helper
 
+> **Obs**.: Há um projeto de backend de uma API de jogo que usa quase todos os Helpers dessa classe. Se quiser utilizar
+> ele como exemplo, é o [szagot/ancient-backend](https://github.com/szagot/ancient-backend)
+
 ### Conexão ao Banco: `Szagot\Helper\Conn`
 
 Conectando ao banco
@@ -142,7 +145,7 @@ class MinhaClassePersonalizadaSemAutoIncremento extends \Szagot\Helper\Conn\Mode
 
 ---
 
-### Controle de Recebimento Requisições: `Szagot\Helper\Uri`
+### Controle de Recebimento Requisições: `Szagot\Helper\Server`
 
 Em breve....
 
