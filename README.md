@@ -1,5 +1,7 @@
 # Helper
 
+![Helper](wiki/assets/helper.png)
+
 Conjunto de classes auxiliadoras para projetos pequenos que não utilizam grandes frameworks.
 
 Este helper possui auxiliares para:
