@@ -109,12 +109,12 @@ Exemplo básico:
 class MinhaClassePersonalizada extends \Szagot\Helper\Conn\Model\aModel
 {
     #[PrimaryKey]
-    private int     $id;
-    private ?string $campo1;
-    private ?string $campo2;
+    protected int     $id;
+    protected ?string $campo1;
+    protected ?string $campo2;
     
     #[IgnoreField]
-    private OutraClasse $campoQueNaoPertenceATabela;
+    protected OutraClasse $campoQueNaoPertenceATabela;
 }
 
 // Preparando conexão
@@ -145,9 +145,9 @@ try {
 class MinhaClassePersonalizadaSemAutoIncremento extends \Szagot\Helper\Conn\Model\aModel
 {
     #[PrimaryKey(autoIncrement: false)]
-    private string  $code;
-    private ?string $campo1;
-    private ?string $campo2;
+    protected string  $code;
+    protected ?string $campo1;
+    protected ?string $campo2;
 }
 ```
 
