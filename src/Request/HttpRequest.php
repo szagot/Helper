@@ -14,15 +14,15 @@ class HttpRequest
     const HTTP_METHOD_PATCH  = 'PATCH';
     const HTTP_METHOD_DELETE = 'DELETE';
 
-    private ?string             $url;
-    private ?string             $method;
-    private ?array              $headers;
-    private array               $bodyContent = [];
-    private CURLFile            $file;
-    private string              $basicUser;
-    private string              $basicPass;
-    private HttpRequestResponse $response;
-    private string              $error;
+    private ?string              $url;
+    private ?string              $method;
+    private ?array               $headers;
+    private ?array               $bodyContent = [];
+    private ?CURLFile            $file;
+    private ?string              $basicUser;
+    private ?string              $basicPass;
+    private ?HttpRequestResponse $response;
+    private ?string              $error;
 
     /**
      * Inicializa a classe setando os atributos principais para a conexão Http
@@ -55,11 +55,11 @@ class HttpRequest
      * Efetua a requisição
      * A resposta pode ser obtida utilizando o método getResponse()
      *
-     * @param int $timeout
+     * @param int|null $timeout
      *
      * @return HttpRequest
      */
-    public function execute(int $timeout = 30): HttpRequest
+    public function execute(?int $timeout = 30): HttpRequest
     {
         // Inicia a requisição setando parâmetros básicos
         $connection = curl_init();
@@ -118,7 +118,7 @@ class HttpRequest
     }
 
     /**
-     * @param string $url URL/URI da requisição
+     * @param string|null $url URL/URI da requisição
      *
      * @return HttpRequest
      */
@@ -144,11 +144,11 @@ class HttpRequest
      *      PATCH  Atualização parcial de campos
      *      DELETE Deleção
      *
-     * @param string $method Método da requisição
+     * @param string|null $method Método da requisição
      *
      * @return HttpRequest
      */
-    public function setMethod(string $method = self::HTTP_METHOD_GET): HttpRequest
+    public function setMethod(?string $method = self::HTTP_METHOD_GET): HttpRequest
     {
         $this->method = preg_match('/^(GET|POST|PUT|PATCH|DELETE)$/', $method) ? $method : 'GET';
 
@@ -168,12 +168,12 @@ class HttpRequest
     }
 
     /**
-     * @param string|array $bodyContent      Conteúdo a ser enviado.
+     * @param string|array|null $bodyContent Conteúdo a ser enviado.
      *                                       Normalmente uma string em JSON, XML ou parâmetros em array
      *
      * @return HttpRequest
      */
-    public function setBodyContent(string|array $bodyContent): HttpRequest
+    public function setBodyContent(string|array|null $bodyContent): HttpRequest
     {
         if (is_string($bodyContent)) {
             $bodyContent = @json_decode($bodyContent, true);
