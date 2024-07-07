@@ -1,6 +1,6 @@
 # Helper
 
-![Helper](wiki/assets/helper.png)
+![Helper: Conexão com o Banco e API](wiki/assets/helper.png)
 
 Conjunto de classes auxiliadoras para projetos pequenos que não utilizam grandes frameworks.
 
