@@ -2,12 +2,6 @@
 /**
  * Executa uma consulta em banco de dados com segurança
  *
- * A flexibilidade desta classe lhe permite fazer consultas em múltiplos BD no mesmo script. Exemplo:
- * $bd1 = new Connection('database1');
- * $bd2 = new Connection('database2');
- * $consulta1 = Query::exec('SELECT...', [], $bd1);
- * $consulta2 = Query::exec('SELECT...', [ 'campo1' => 'valor' ], $bd2);
- *
  * @author    Daniel Bispo <szagot@gmail.com>
  * @copyright Copyright (c) 2024
  */
@@ -30,8 +24,7 @@ class Query
      * NOTA: Por padrão, os dados dos parâmetros, quando string, sofrerão a remoção de quaisquer tags html, a menos que
      * a chave do parâmetro venha acompanhado de asterisco(*). Exemplo: $params = ['desc*' => '<p>...</p>'];
      *
-     * ATENÇÃO! É necessário que a conexão ao BD tenha sido informado em algum momento antes com self::setConn,
-     * ou através do parâmetro $conn. Exemplo: Query::exec('SELECT ...', [], new Connection(...) );
+     * ATENÇÃO! É necessário que a conexão ao BD tenha sido informado em algum momento antes com setConn()
      *
      * @param string      $sql   Comando SQL
      * @param array|null  $params
