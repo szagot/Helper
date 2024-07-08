@@ -64,7 +64,7 @@ class Parameter
     {
         $value = $this->value;
 
-        if (empty($value)) {
+        if (empty($value) || is_array($value) || is_object($value)) {
             return $value;
         }
 
