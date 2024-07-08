@@ -34,8 +34,8 @@ abstract class aModel
                 continue;
             }
 
-            // Se for array, trata cada item dele
-            if (is_array($value)) {
+            // Se for array com conteúdo, trata cada item dele
+            if (!empty($value) && is_array($value)) {
                 foreach ($value as $arrayKey => $arrayValue) {
                     $modelArray[$key][$arrayKey] = ($arrayValue instanceof aModel) ? $arrayValue->toArray() : $arrayValue;
                 }

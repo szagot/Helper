@@ -1,7 +1,7 @@
 {
   "name": "szagot/helper",
   "description": "Classes estilo HELPER para Configuração de Sistemas e controle de Banco e Requisições",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "authors": [
     {
       "name": "Daniel Bispo",
