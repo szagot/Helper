@@ -17,7 +17,7 @@ class Parameter
 
     public function __construct(
         private string $name,
-        private string $value,
+        private mixed $value,
     ) {
         $this->type = gettype($this->amendValue());
     }
@@ -37,7 +37,7 @@ class Parameter
         return $this->name;
     }
 
-    public function getValue(bool $original = false): string
+    public function getValue(bool $original = false): mixed
     {
         return $original ? $this->value : $this->amendValue();
     }
