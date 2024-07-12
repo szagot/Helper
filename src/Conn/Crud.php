@@ -147,6 +147,10 @@ class Crud
         $table = self::getTable($class, $instance);
         $tableContent = $instance->toArray();
 
+        if (empty($tableContent)) {
+            throw new ConnException('Os campos do model estão inacessíveis.');
+        }
+
         // Se a Chave primaria for do tipo de auto incremento, exclui ela dos campos de inserção
         if (ModelHelper::isPKAutoIncrement($class)) {
             unset($tableContent[self::getPrimaryKey($class)]);
@@ -184,6 +188,11 @@ class Crud
     {
         $table = self::getTable($class, $instance);
         $tableContent = $instance->toArray();
+
+        if (empty($tableContent)) {
+            throw new ConnException('Os campos do model estão inacessíveis.');
+        }
+
         $idField = self::getPrimaryKey($class);
 
         $fields = [];
@@ -203,7 +212,7 @@ class Crud
             $class
         ) ?? [];
         if (!$update) {
-            throw new ConnException("Não foi possível atualizar o registro de ID {$instance->$idField} no momento.");
+            throw new ConnException("Não foi possível atualizar o registro de ID {$tableContent[$idField]} no momento.");
         }
     }
 
