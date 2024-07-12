@@ -115,10 +115,10 @@ class Crud
      * @param string     $filter     Pesquisa do WHERE para MySQL/MariaDB
      * @param array|null $parameters Parâmetros usados no filtro (':parameter')
      *
-     * @return mixed
+     * @return array
      * @throws ConnException
      */
-    static public function searchCustom(string $class, string $filter, ?array $parameters = []): mixed
+    static public function searchCustom(string $class, string $filter, ?array $parameters = []): array
     {
         $table = self::getTable($class);
 
@@ -127,7 +127,7 @@ class Crud
             "SELECT * FROM $table WHERE $filter",
             $parameters,
             $class
-        );
+        ) ?? [];
     }
 
     /**
