@@ -63,6 +63,23 @@ try {
 }
 ```
 
+Fazendo uma pesquisa customizada
+
+```php
+try {
+    $search = Crud::searchCustom(
+    MinhaClassePersonalizada::class, 
+    'name LIKE :name AND age >= :age', 
+    [
+        'name' => '%fulano%', 
+        'age' => 18,
+    ]
+    );
+} catch (ConnException $e) {
+    exit($e);
+}
+```
+
 Fazendo uma inserção direta
 
 ```php

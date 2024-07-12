@@ -106,6 +106,31 @@ class Crud
     }
 
     /**
+     * Faz uma pesquisa personalizada
+     *
+     * Exemplo de uso:
+     *        Crud::searchCustom(MyModel::class, 'name LIKE :name AND age >= :age', ['name' => '%fulano%', 'age' => 18])
+     *
+     * @param string     $class
+     * @param string     $filter     Pesquisa do WHERE para MySQL/MariaDB
+     * @param array|null $parameters Parâmetros usados no filtro (':parameter')
+     *
+     * @return array
+     * @throws ConnException
+     */
+    static public function searchCustom(string $class, string $filter, ?array $parameters = []): array
+    {
+        $table = self::getTable($class);
+
+        return Query::exec(
+        /** @lang text */
+            "SELECT * FROM $table WHERE $filter",
+            $parameters,
+            $class
+        ) ?? [];
+    }
+
+    /**
      * Insere um registro
      *
      * Exemplo de uso:
